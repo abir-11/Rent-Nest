@@ -8,3 +8,11 @@ export interface IUser{
     phoneNumber?:string
     gender?:Gender
 }
+
+export interface IProfileUpdate{
+    name?:string,
+    profilePhoto?:string,
+    bio?:string,
+    address?:string,
+    phoneNumber?:string
+}

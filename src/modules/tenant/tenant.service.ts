@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
-import { IUser } from "./tenant.interface"
+import { IProfileUpdate, IUser } from "./tenant.interface"
 import config from "../../config";
 
 
@@ -49,6 +49,61 @@ const createUserDB = async (payload: IUser) => {
     return user;
 }
 
+const getMe = async (userId: string) => {
+    const user = await prisma.user.findUniqueOrThrow({
+        where: {
+            id: userId
+        },
+        omit: {
+            password: true
+        },
+        include: {
+            profiles: true
+        }
+    })
+
+    return user;
+
+}
+const updateMyProfile = async (userId: string, payload: IProfileUpdate) => {
+    const { name, profilePhoto, bio, address, phoneNumber } = payload;
+
+    const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+            name,
+            phoneNumber
+        },
+        omit: {
+            password: true
+        }
+    });
+
+    const updatedProfile = await prisma.profile.upsert({
+        where: { 
+            userId: userId 
+        },
+        create: {
+            userId: userId, 
+            profilePhoto,
+            bio,
+            address
+        },
+        update: {
+            profilePhoto,
+            bio,
+            address
+        }
+    });
+
+    return {
+        ...updatedUser,
+        profiles: updatedProfile
+    };
+}
+
 export const tenantService = {
-    createUserDB
+    createUserDB,
+    getMe,
+    updateMyProfile
 }
