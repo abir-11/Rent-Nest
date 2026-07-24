@@ -2,6 +2,7 @@ import cookieParser from "cookie-parser";
 import express, { Application, Request, Response } from "express";
 import cors from "cors"
 import config from "./config";
+import { tetantRouter } from "./modules/tenant/tenant.router";
 
 
 const app: Application = express();
@@ -18,5 +19,6 @@ app.get('/', async(req: Request, res: Response) => {
     res.send("Hello,world!");
 })
 
+app.use("/api/auth",tetantRouter);
 
 export default app;

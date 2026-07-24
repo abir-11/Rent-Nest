@@ -3,7 +3,6 @@ model Profile {
   profilePhoto     String?
   bio              String?
   address          String?
-  phoneNumber      String?
   gender           Gender?     
 
 
