@@ -1,14 +1,16 @@
 model User {
-  id             String          @id @default(uuid())
-  name           String          @db.VarChar(255)
-  email          String          @unique
-  password       String
-  role           Role            @default(TENANT)
-  phoneNumber    String?
-  status         Status          @default(ACTIVE)
-  profiles       Profile[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  id          String       @id @default(uuid())
+  name        String       @db.VarChar(255)
+  email       String       @unique
+  password    String
+  role        Role         @default(TENANT)
+  phoneNumber String?
+  status      Status       @default(ACTIVE)
+  profiles    Profile[]
+  properties  Properties[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
 
   @@map("users")
 }
