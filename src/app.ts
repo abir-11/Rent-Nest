@@ -7,6 +7,7 @@ import { authRouter } from "./modules/auth/auth.router";
 import { catagoryRouter } from "./modules/category/category.router";
 import { propertiesRouter } from "./modules/properties/properties.router";
 import { landlordRouter } from "./modules/landlord/landlord.router";
+import { rentalRequestRouter } from "./modules/rental/rental.router";
 
 
 const app: Application = express();
@@ -27,6 +28,7 @@ app.use("/api/auth",tetantRouter);
 app.use("/api/auth",authRouter);
 app.use("/api",catagoryRouter);
 app.use("/api/landlord",landlordRouter);
-app.use("/api/properties",propertiesRouter)
+app.use("/api/properties",propertiesRouter);
+app.use("/api/rentals",rentalRequestRouter)
 
 export default app;
