@@ -6,6 +6,7 @@ import { tetantRouter } from "./modules/tenant/tenant.router";
 import { authRouter } from "./modules/auth/auth.router";
 import { catagoryRouter } from "./modules/category/category.router";
 import { propertiesRouter } from "./modules/properties/properties.router";
+import { landlordRouter } from "./modules/landlord/landlord.router";
 
 
 const app: Application = express();
@@ -24,7 +25,8 @@ app.get('/', async(req: Request, res: Response) => {
 
 app.use("/api/auth",tetantRouter);
 app.use("/api/auth",authRouter);
-app.use("/api/landlord",catagoryRouter);
-app.use("/api/landlord",propertiesRouter);
+app.use("/api",catagoryRouter);
+app.use("/api/landlord",landlordRouter);
+app.use("/api/properties",propertiesRouter)
 
 export default app;

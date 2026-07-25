@@ -1,12 +1,10 @@
-import { Role } from "../../../prisma/generated/prisma/enums";
+import { PropertiesWhereInput } from "../../../prisma/generated/prisma/models";
 
-export interface IProperty {
-    landlordId:string;
-    categoryId: string;
-    title: string;
-    description: string;
-    location: string;
-    price: number;
-    amenities: string[];
-    isAvailable?: boolean;
+export interface IPropertiesQuery extends PropertiesWhereInput{
+    searchTerm?:string;
+    page?:string;
+    limit?:string;
+    sortOrder?:string;
+    sortBy?:string;
+    type?:string
 }

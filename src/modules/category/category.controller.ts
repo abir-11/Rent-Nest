@@ -11,13 +11,26 @@ const createCategory = catchAsync(async (req: Request, res: Response, next: Next
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.CREATED,
-        message: "User Create successfull",
+        message: "Categorty Create successfull",
         data: {
             category
         }
     })
 })
 
+const  getAllCategoris=catchAsync(async(req: Request, res: Response, next: NextFunction)=>{
+    const result=await categoryService.getAllCategoris();
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Categorty all get successfull",
+        data: {
+            result
+        }
+    })
+})
+
 export const categoryController = {
-    createCategory
+    createCategory,
+    getAllCategoris
 }

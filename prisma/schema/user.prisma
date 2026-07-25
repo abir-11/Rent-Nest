@@ -8,6 +8,7 @@ model User {
   status      Status       @default(ACTIVE)
   profiles    Profile[]
   properties  Properties[]
+  rentalRequest RentalRequest[]
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
   

@@ -4,25 +4,35 @@ import { sendResponse } from "../../utils/sendResponse";
 import httpStatus from 'http-status';
 import { propertiesService } from "./properties.service";
 
-
-const createNewProperties = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const userId=req.user?.id as string;
-    const payload = {
-        ...req.body,
-        landlordId: userId
-    };
-
-    const properties = await propertiesService.createNewProperties(payload);
+const getAllProperties=catchAsync(async(req: Request, res: Response, next: NextFunction)=>{
+    const result=await propertiesService.getAllProperties(req.query);
     sendResponse(res, {
         success: true,
-        statusCode: httpStatus.CREATED,
-        message: "User Create successfull",
-        data: {
-            properties
+        statusCode: httpStatus.OK,
+        message: "Properties all get successfull",
+        data:result.data,
+        meta:{
+            ...result.meta,
+            total:result.meta.totalPage
         }
     })
 })
+const getPropertiesById=catchAsync(async(req: Request, res: Response, next: NextFunction)=>{
+    const id=req.params?.id;
+    const result=await propertiesService.getPropertiesById(id as string);
+     sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Properties  get by single id successfull",
+        data:{
+            result
+        }
+       
+    })
+})
+
 
 export const propertiesContorller = {
-    createNewProperties
+ getAllProperties,
+ getPropertiesById
 }
