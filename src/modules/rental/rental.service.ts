@@ -7,7 +7,7 @@ const createRentalRequest = async (payload: IRentalRequest) => {
     const {
         propertyId,
         message,
-        tenantId,
+        tenantId, 
     } = payload;
     const existingRequest = await prisma.rentalRequest.findFirst({
         where: {

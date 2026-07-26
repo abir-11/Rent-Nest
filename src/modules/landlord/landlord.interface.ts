@@ -1,4 +1,5 @@
 
+import { RequestStatus } from './../../../prisma/generated/prisma/enums';
 export interface IProperty {
     landlordId:string;
     categoryId: string;
@@ -19,4 +20,8 @@ export interface IUpdateProperties{
     images?:string;
     amenities?: string[];
     isAvailable?: boolean;
+}
+
+export interface IUpdateRental{
+    status:RequestStatus
 }

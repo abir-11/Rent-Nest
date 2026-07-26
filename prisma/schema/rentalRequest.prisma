@@ -3,6 +3,8 @@ model RentalRequest {
     tenantId   String
     tenant     User       @relation(fields: [tenantId], references: [id])
     propertyId String
+   
+
     properties Properties @relation(fields: [propertyId], references: [id])
 
     status  RequestStatus @default(PENDING)
