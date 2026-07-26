@@ -1,10 +1,10 @@
 model Review {
     id      String @id @default(uuid())
-    rating  Int
-    comment String
+    rating  Int?
+    comment String?
 
-    tenantId String
-    tenant   User   @relation(fields: [tenantId], references: [id])
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
 
     propertyId String
     properties Properties @relation(fields: [propertyId], references: [id])
