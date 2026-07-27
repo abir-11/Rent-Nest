@@ -1,4 +1,5 @@
 // removed unused import
+import { RequestStatus } from "../../../prisma/generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { IProperty, IUpdateProperties, IUpdateRental } from "./landlord.interface";
 
@@ -188,50 +189,76 @@ const getAllRentalRequest = async (propertyId: string, userId: string) => {
     return requests;
 };
 
-const updateLandlorRentalRequest = async (id: string, landlordId: string, payload: IUpdateRental) => {
-    const { status } = payload;
+const updateLandlorRentalRequest = async (
+  id: string,
+  landlordId: string,
+  payload: IUpdateRental
+) => {
+  const { status } = payload;
 
-    const landLord = await prisma.rentalRequest.findFirst({
-        where: {
-            id,
-            properties: {
-                landlordId
-            }
-        }
-    })
-    if (!landLord) {
-        throw new Error("Unauthorized user");
-    }
+  const landLord = await prisma.rentalRequest.findFirst({
+    where: {
+      id,
+      properties: {
+        landlordId,
+      },
+    },
+  });
 
-    const updateRental = await prisma.rentalRequest.update({
+  if (!landLord) {
+    throw new Error("Unauthorized user");
+  }
+
+  if (landLord.status !== RequestStatus.PENDING) {
+    throw new Error("Rental request has already been processed");
+  }
+
+  const result = await prisma.$transaction(async (tx) => {
+    const updateRental = await tx.rentalRequest.update({
+      where: {
+        id,
+      },
+      data: {
+        status,
+        approvedAt:
+          status === RequestStatus.APPROVED ? new Date() : null,
+        rejectedAt:
+          status === RequestStatus.REJECTED ? new Date() : null,
+      },
+      include: {
+        properties: {
+          select: {
+            id: true,
+            title: true,
+            landlordId: true,
+          },
+        },
+        tenant: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+
+    if (status === RequestStatus.APPROVED) {
+      await tx.properties.update({
         where: {
-            id: id
+          id: landLord.propertyId,
         },
         data: {
-            status
+          isAvailable: false,
         },
-        include: {
-            properties: {
-                select: {
-                    title: true,
-                    landlordId: true,
-                    id: true
-                },
-            },
+      });
+    }
 
-            tenant: {
-                select: {
-                    email: true,
-                    name: true,
-                    id: true
-                }
-            },
-
-        },
-
-    })
     return updateRental;
-}
+  });
+
+  return result;
+};
 
 export const landlordService = {
     createNewProperties,

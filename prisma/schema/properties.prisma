@@ -8,9 +8,9 @@ model Properties {
     images        String[]
     isAvailable   Boolean         @default(true)
     landlordId    String
-    landlord      User            @relation(fields: [landlordId], references: [id])
+    landlord      User            @relation(fields: [landlordId], references: [id],onDelete: Cascade)
     categoryId    String
-    category      Category        @relation(fields: [categoryId], references: [id])
+    category      Category        @relation(fields: [categoryId], references: [id],onDelete: Cascade)
     rentalRequest RentalRequest[]
     reviews       Review[]
     createdAt     DateTime        @default(now())

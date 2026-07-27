@@ -1,17 +1,22 @@
 model RentalRequest {
-    id         String     @id @default(uuid())
+    id         String @id @default(uuid())
     tenantId   String
-    tenant     User       @relation(fields: [tenantId], references: [id])
+    tenant     User   @relation(fields: [tenantId], references: [id],onDelete: Cascade)
     propertyId String
-   
 
-    properties Properties @relation(fields: [propertyId], references: [id])
+    properties Properties @relation(fields: [propertyId], references: [id] ,onDelete: Cascade)
 
-    status  RequestStatus @default(PENDING)
-    message String?
+    status    RequestStatus @default(PENDING)
+    message   String?
+    startDate DateTime
+    endDate   DateTime
+
+    approvedAt  DateTime?
+    rejectedAt  DateTime?
+    completedAt DateTime?
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    @@map("rental_requests")
+    @@map("rentalRequests")
 }

@@ -4,10 +4,10 @@ model Review {
     comment String?
 
     userId String
-    user   User   @relation(fields: [userId], references: [id])
+    user   User   @relation(fields: [userId], references: [id],onDelete: Cascade)
 
     propertyId String
-    properties Properties @relation(fields: [propertyId], references: [id])
+    properties Properties @relation(fields: [propertyId], references: [id],onDelete: Cascade)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
