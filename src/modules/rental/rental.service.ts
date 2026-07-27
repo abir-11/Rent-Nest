@@ -132,19 +132,10 @@ const createRentalRequest = async (payload: IRentalRequest, tenantId: string) =>
 }
 
 const getAllRentalRequestTenat = async (tenantId: string) => {
-    const user = await prisma.user.findFirst({
-        where: {
-            id:tenantId
-        }
-    })
-    if (!user) {
-        throw new Error("User not found")
-    }
+
     const result = await prisma.rentalRequest.findMany({
         where: {
-           tenant:{
-            id:tenantId
-           }
+          tenantId:tenantId
         },
         include: {
             properties: {

@@ -3,18 +3,28 @@ enum Role {
   LANDLORD
   ADMIN
 }
-enum Status{
-    ACTIVE
-    BANNED
+
+enum Status {
+  ACTIVE
+  BANNED
 }
+
 enum Gender {
   MALE
   FEMALE
   OTHER
 }
+
 enum RequestStatus {
   PENDING
   APPROVED
   REJECTED
   COMPLETE
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
 }

@@ -24,7 +24,7 @@ const  createRentalRequest=catchAsync(async(req:Request,res:Response,next:NextFu
 })
 const getAllRentalRequestTenat=catchAsync(async(req:Request,res:Response,next:NextFunction)=>{
 
-const tenantId=req.params?.tenantId;
+const tenantId=req.user?.id;
 const rentalRequest=await renatalRequestService.getAllRentalRequestTenat(tenantId as string);
 
  sendResponse(res,{

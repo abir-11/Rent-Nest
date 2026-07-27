@@ -254,6 +254,7 @@ const updateLandlorRentalRequest = async (
       });
     }
 
+
     return updateRental;
   });
 
