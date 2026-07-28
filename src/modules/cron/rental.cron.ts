@@ -25,7 +25,7 @@ export const rentalCronJob = () => {
               id: rental.id,
             },
             data: {
-              status: RequestStatus.COMPLETE,
+              status: RequestStatus.COMPLETED,
               completedAt: new Date(),
             },
           });

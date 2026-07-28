@@ -7,7 +7,7 @@ const createReviews = async (payload: IReviews, userId: string) => {
   where: {
     tenantId: userId,
     propertyId: payload.propertyId,
-    status: "COMPLETE",
+    status: "COMPLETED",
   },
 });
 

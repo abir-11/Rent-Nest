@@ -4,11 +4,14 @@ model Payment {
     amount          Float
     transactionId   String?       @unique
     status          PaymentStatus @default(PENDING)
-    meta            Json
     method          String?
     paidAt          DateTime?
     createdAt       DateTime      @default(now())
     updatedAt       DateTime      @updatedAt
 
     rentalRequest RentalRequest @relation(fields: [rentalRequestId], references: [id], onDelete: Cascade)
+    userId        String
+    user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    @@map("payments")
 }
