@@ -133,9 +133,34 @@ const createRentalRequest = async (payload: IRentalRequest, tenantId: string) =>
 
 const getAllRentalRequestTenat = async (tenantId: string) => {
 
+    if (!tenantId) {
+        throw new Error("Unauthorized. Please login first.");
+    }
+
+    const tenant = await prisma.user.findUnique({
+        where: {
+            id: tenantId,
+        },
+        select: {
+            id: true,
+            role: true,
+            status: true,
+        },
+    });
+
+    if (!tenant) {
+        throw new Error("User not found");
+    }
+
+    if (tenant.status === "BANNED") {
+        throw new Error("Your account has been banned");
+    }
+
+   
+
     const result = await prisma.rentalRequest.findMany({
         where: {
-          tenantId:tenantId
+            tenantId,
         },
         include: {
             properties: {
@@ -144,22 +169,25 @@ const getAllRentalRequestTenat = async (tenantId: string) => {
                         select: {
                             id: true,
                             name: true,
-
-                        }
+                        },
                     },
                     landlord: {
                         select: {
                             id: true,
                             name: true,
-                            email: true
-                        }
-                    }
-                }
-            }
-        }
-    })
-    return result
-}
+                            email: true,
+                        },
+                    },
+                },
+            },
+        },
+        orderBy: {
+            createdAt: "desc",
+        },
+    });
+
+    return result;
+};
 
 const rentalRequestGetById = async (id: string) => {
 
