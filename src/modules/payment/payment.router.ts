@@ -9,6 +9,7 @@ router.post("/create", auth(Role.ADMIN, Role.LANDLORD, Role.TENANT), paymentCont
 router.post("/confirm",
     paymentController.handleStripeWebhook);
 
-router.get('/',auth(Role.ADMIN,Role.LANDLORD,Role.TENANT),paymentController.getPayment)
+router.get('/',auth(Role.ADMIN,Role.LANDLORD,Role.TENANT),paymentController.getPaymentUser)
+router.get('/:id',auth(Role.ADMIN,Role.LANDLORD,Role.TENANT),paymentController.getSinglePayment)
 
 export const paymentRouter = router;

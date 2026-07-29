@@ -50,7 +50,7 @@ const handleStripeWebhook = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Webhook processing failed" });
     }
 };
-const getPayment=catchAsync(async(req:Request,res:Response,next:NextFunction)=>{
+const getPaymentUser=catchAsync(async(req:Request,res:Response,next:NextFunction)=>{
     const userId=req.user?.id;
     const payment=await paymentService.getPayment(userId as string,req.query);
        sendResponse(res, {
@@ -60,8 +60,30 @@ const getPayment=catchAsync(async(req:Request,res:Response,next:NextFunction)=>{
             data: payment
         });
 })
+const getSinglePayment = catchAsync(
+  async (
+    req: Request,
+    res: Response
+  ) => {
+
+    const result = await paymentService.getSinglePayment(
+      req.user!.id,
+      req.params.id as string
+    );
+
+    sendResponse(res, {
+      success: true,
+      statusCode: httpStatus.OK,
+      message: "Payment retrieved successfully",
+      data: result,
+    });
+
+  }
+);
+
 export const paymentController = {
     createPayment,
     handleStripeWebhook,
-    getPayment
+    getPaymentUser,
+    getSinglePayment
 }

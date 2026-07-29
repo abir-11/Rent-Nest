@@ -160,7 +160,7 @@ const getPayment = async (
                         select: {
                             id: true,
                             title: true,
-                            
+
 
 
                         },
@@ -203,8 +203,58 @@ const getPayment = async (
 
 };
 
+const getSinglePayment = async (
+    tenantId: string,
+    paymentId: string
+) => {
+
+    const payment = await prisma.payment.findUnique({
+        where: {
+            id: paymentId,
+        },
+        include: {
+            rentalRequest: {
+                select: {
+                    id: true,
+                    startDate: true,
+                    endDate: true,
+                    status: true,
+                    tenantId:true
+                    
+                }
+            }
+        },
+    });
+
+    if (!payment) {
+     throw new Error("Payment not found!!!")
+    }
+
+    if (payment.rentalRequest.tenantId !== tenantId) {
+     throw new Error("user not found!!!")
+    }
+
+    return {
+        id: payment.id,
+        amount: payment.amount,
+        method: payment.method,
+        status: payment.status,
+        paidAt: payment.paidAt,
+        createdAt: payment.createdAt,
+
+        rentalRequest: {
+            id: payment.rentalRequest.id,
+            startDate: payment.rentalRequest.startDate,
+            endDate: payment.rentalRequest.endDate,
+        },
+        
+    };
+
+};
+
 export const paymentService = {
     createPayment,
     handleStripeWebhook,
-    getPayment
+    getPayment,
+    getSinglePayment
 }
