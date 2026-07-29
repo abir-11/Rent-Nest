@@ -38,7 +38,6 @@ const handleStripeWebhook = async (req: Request, res: Response) => {
     }
 
     try {
-        console.log(" WEBHOOK EVENT RECEIVED:", event.type);
 
         if (event.type === "checkout.session.completed") {
             await paymentService.handleStripeWebhook(event);
@@ -51,7 +50,18 @@ const handleStripeWebhook = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Webhook processing failed" });
     }
 };
+const getPayment=catchAsync(async(req:Request,res:Response,next:NextFunction)=>{
+    const userId=req.user?.id;
+    const payment=await paymentService.getPayment(userId as string,req.query);
+       sendResponse(res, {
+            success: true,
+            statusCode: 200,
+            message: "Payment history retrieved successfully",
+            data: payment
+        });
+})
 export const paymentController = {
     createPayment,
-    handleStripeWebhook
+    handleStripeWebhook,
+    getPayment
 }

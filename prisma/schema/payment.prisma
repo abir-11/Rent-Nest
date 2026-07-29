@@ -2,7 +2,7 @@ model Payment {
     id              String        @id @default(uuid())
     rentalRequestId String        @unique
     amount          Float
-    transactionId   String?       @unique
+    transactionId   String       @unique
     status          PaymentStatus @default(PENDING)
     method          String?
     paidAt          DateTime?

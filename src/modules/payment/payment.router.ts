@@ -4,7 +4,11 @@ import { auth } from "../../middleware/auth";
 import { Role } from "../../../prisma/generated/prisma/enums";
 
 
-const router=Router();
-router.post("/create",auth(Role.ADMIN,Role.LANDLORD,Role.TENANT),paymentController.createPayment);
+const router = Router();
+router.post("/create", auth(Role.ADMIN, Role.LANDLORD, Role.TENANT), paymentController.createPayment);
+router.post("/confirm",
+    paymentController.handleStripeWebhook);
 
-export const paymentRouter=router;
+router.get('/',auth(Role.ADMIN,Role.LANDLORD,Role.TENANT),paymentController.getPayment)
+
+export const paymentRouter = router;
