@@ -12,6 +12,8 @@ import { reviewsRouter } from "./modules/reviews/reviews.router";
 import { rentalCronJob } from "./modules/cron/rental.cron";
 import { paymentRouter } from "./modules/payment/payment.router";
 import { adminRouter } from "./modules/admin/admin.router";
+import { notFound } from "./middleware/notFound";
+import { globalErrorHandller } from "./middleware/globalErrorHandeller";
 
 
 const app: Application = express();
@@ -44,5 +46,7 @@ app.use("/api/reviews", reviewsRouter);
 app.use("/api/payments", paymentRouter);
 app.use("/api/admin",adminRouter);
 rentalCronJob();
+app.use(notFound);
+app.use(globalErrorHandller);
 
 export default app;
