@@ -7,12 +7,9 @@ import { landlordService } from "./landlord.service";
 
 const createNewProperties = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const userId = req.user?.id as string;
-    const payload = {
-        ...req.body,
-        landlordId: userId
-    };
+    const payload = req.body
 
-    const properties = await landlordService.createNewProperties(payload);
+    const properties = await landlordService.createNewProperties(userId,payload);
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.CREATED,

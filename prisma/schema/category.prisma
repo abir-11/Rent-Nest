@@ -2,6 +2,8 @@ model Category {
     id          String       @id @default(uuid())
     name        String       @unique
     description String?
+    landlordId  String?
+    landlord    User?         @relation(fields: [landlordId], references: [id])
     properties  Properties[]
 
     createdAt DateTime @default(now())

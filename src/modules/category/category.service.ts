@@ -3,37 +3,59 @@ import { prisma } from "../../lib/prisma";
 import { ICategory } from "./category.interface";
 
 
-const createCategory = async (payload: ICategory) => {
+const createCategory = async (
+  landlordId: string,
+  payload: ICategory
+) => {
+  const { name, description } = payload;
 
-    const { name, description } = payload;
-    const exsiting = await prisma.category.findUnique({
-        where: {
-            name
-        }
-    })
+  const existingLandlord = await prisma.user.findUnique({
+    where: {
+      id: landlordId, 
+    },
+  });
 
-    if (exsiting) {
-        throw new Error("Category all ready exists")
+  if (!existingLandlord) {
+    throw new Error("Landlord does not exist");
+  }
+
+  const existingCategory = await prisma.category.findFirst({
+    where: {
+      name,
+      landlordId,
+    },
+  });
+
+  if (existingCategory) {
+    throw new Error("A category with this name already exists");
+  }
+
+  const category = await prisma.category.create({
+    data: {
+      name,
+      description,
+      landlordId,
+    },
+  });
+
+  return category;
+};
+
+const getAllCategoris = async (landlordId: string) => {
+  const result = await prisma.category.findMany({
+    where: {
+      landlordId
+    },
+    include: {
+      properties: true,
+    },
+    orderBy:{
+        createdAt:"desc"
     }
+  });
 
-    const category = await prisma.category.create({
-        data: {
-            name,
-            description
-        },
-
-    })
-    return category
-}
-
-const getAllCategoris=async()=>{
-    const result=await prisma.category.findMany({
-        include:{
-            properties:true
-        }
-    })
-    return result
-}
+  return result;
+};
 
 export const categoryService = {
     createCategory,

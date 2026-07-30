@@ -1,13 +1,14 @@
-// removed unused import
-import { RequestStatus } from "../../../prisma/generated/prisma/enums";
+
+import { RequestStatus, Role } from "../../../prisma/generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 import { IProperty, IUpdateProperties, IUpdateRental } from "./landlord.interface";
 
 
-const createNewProperties = async (payload: IProperty) => {
-
+const createNewProperties = async (
+    userId: string,
+    payload: IProperty
+) => {
     const {
-        landlordId,
         categoryId,
         title,
         description,
@@ -15,25 +16,48 @@ const createNewProperties = async (payload: IProperty) => {
         price,
         amenities,
         isAvailable,
-        images
+        images,
     } = payload;
 
 
-    let imagesData: any = undefined;
-    if (images !== undefined) {
-        imagesData = typeof images === "string" ? [images] : images;
+    const user = await prisma.user.findUnique({
+        where: {
+            id: userId,
+        },
+    });
+
+    if (!user) {
+        throw new Error("User not found");
     }
 
-    const category = await prisma.category.findUnique({
+    if (
+        user.role !== Role.ADMIN &&
+        user.role !== Role.LANDLORD) {
+        throw new Error("Unauthorized");
+    }
+
+    let imagesData: string[] | undefined = undefined;
+
+    if (images !== undefined) {
+        imagesData = Array.isArray(images) ? images : [images];
+    }
+
+    const category = await prisma.category.findFirst({
         where: {
-            id: categoryId
-        }
-    })
+            id: categoryId,
+            landlordId: userId,
+        },
+    });
 
+    if (!category) {
+        throw new Error(
+            "Category not found or you are not authorized to use this category."
+        );
+    }
 
-    const properties = await prisma.properties.create({
+    const property = await prisma.properties.create({
         data: {
-            landlordId,
+            landlordId: userId,
             categoryId,
             title,
             description,
@@ -41,21 +65,23 @@ const createNewProperties = async (payload: IProperty) => {
             price,
             amenities,
             isAvailable,
-            images: imagesData
+            images: imagesData,
         },
         include: {
             category: true,
             landlord: {
                 select: {
                     id: true,
-                    email: true
-                }
-            }
-        }
+                    name: true,
+                    email: true,
+                },
+            },
+        },
     });
 
-    return properties;
-}
+    return property;
+};
+
 
 const getLandlordRequest = async (userId: string) => {
 
@@ -72,6 +98,9 @@ const getLandlordRequest = async (userId: string) => {
                     email: true
                 }
             }
+        },
+        orderBy:{
+            createdAt:"desc"
         }
 
     });

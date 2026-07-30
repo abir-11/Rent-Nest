@@ -7,6 +7,7 @@ model User {
   phoneNumber   String?
   status        Status          @default(ACTIVE)
   profiles      Profile[]
+  category      Category[]
   properties    Properties[]
   rentalRequest RentalRequest[]
   reviews       Review[]

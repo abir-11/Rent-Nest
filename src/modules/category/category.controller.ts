@@ -7,7 +7,8 @@ import { sendResponse } from '../../utils/sendResponse';
 
 
 const createCategory = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const category = await categoryService.createCategory(req.body);
+    const landlordId=req.user?.id as string
+    const category = await categoryService.createCategory(landlordId,req.body);
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.CREATED,
@@ -19,7 +20,7 @@ const createCategory = catchAsync(async (req: Request, res: Response, next: Next
 })
 
 const  getAllCategoris=catchAsync(async(req: Request, res: Response, next: NextFunction)=>{
-    const result=await categoryService.getAllCategoris();
+    const result=await categoryService.getAllCategoris(req.params?.landlordId as string);
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
