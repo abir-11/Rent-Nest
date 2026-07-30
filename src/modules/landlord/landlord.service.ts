@@ -183,6 +183,9 @@ const getAllRentalRequest = async (propertyId: string, userId: string) => {
                 }
             }
         },
+        orderBy: {
+            createdAt: "desc"
+        }
 
     });
 
@@ -190,75 +193,84 @@ const getAllRentalRequest = async (propertyId: string, userId: string) => {
 };
 
 const updateLandlorRentalRequest = async (
-  id: string,
-  landlordId: string,
-  payload: IUpdateRental
+    id: string,
+    landlordId: string,
+    payload: IUpdateRental
 ) => {
-  const { status } = payload;
+    const { status } = payload;
 
-  const landLord = await prisma.rentalRequest.findFirst({
-    where: {
-      id,
-      properties: {
-        landlordId,
-      },
-    },
-  });
-
-  if (!landLord) {
-    throw new Error("Unauthorized user");
-  }
-
-  if (landLord.status !== RequestStatus.PENDING) {
-    throw new Error("Rental request has already been processed");
-  }
-
-  const result = await prisma.$transaction(async (tx) => {
-    const updateRental = await tx.rentalRequest.update({
-      where: {
-        id,
-      },
-      data: {
-        status,
-        approvedAt:
-          status === RequestStatus.APPROVED ? new Date() : null,
-        rejectedAt:
-          status === RequestStatus.REJECTED ? new Date() : null,
-      },
-      include: {
-        properties: {
-          select: {
-            id: true,
-            title: true,
-            landlordId: true,
-          },
+    const landLord = await prisma.rentalRequest.findFirst({
+        where: {
+            id,
+            properties: {
+                landlordId,
+            },
         },
-        tenant: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-      },
     });
 
-    if (status === RequestStatus.APPROVED) {
-      await tx.properties.update({
-        where: {
-          id: landLord.propertyId,
-        },
-        data: {
-          isAvailable: false,
-        },
-      });
+    if (!landLord) {
+        throw new Error("Unauthorized user");
     }
 
+    if (landLord.status === RequestStatus.COMPLETED) {
+        throw new Error("Completed rental request cannot be updated");
+    }
 
-    return updateRental;
-  });
+    if (landLord.status === RequestStatus.ACTIVE) {
+        throw new Error("Active rental request cannot be updated");
+    }
 
-  return result;
+    if (landLord.status !== RequestStatus.PENDING) {
+        throw new Error("Rental request has already been processed");
+    }
+
+    const result = await prisma.$transaction(async (tx) => {
+        const updateRental = await tx.rentalRequest.update({
+            where: {
+                id,
+            },
+            data: {
+                status,
+                approvedAt:
+                    status === RequestStatus.APPROVED ? new Date() : null,
+                rejectedAt:
+                    status === RequestStatus.REJECTED ? new Date() : null,
+            },
+            include: {
+                properties: {
+                    select: {
+                        id: true,
+                        title: true,
+                        landlordId: true,
+                    },
+                },
+                tenant: {
+                    select: {
+                        id: true,
+                        name: true,
+                        email: true,
+                    },
+                },
+            },
+        });
+
+        if (status === RequestStatus.APPROVED) {
+            await tx.properties.update({
+                where: {
+                    id: landLord.propertyId,
+                },
+                data: {
+                    isAvailable: false,
+                },
+            });
+        }
+
+
+
+        return updateRental;
+    });
+
+    return result;
 };
 
 export const landlordService = {
