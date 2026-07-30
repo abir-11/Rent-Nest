@@ -39,6 +39,24 @@ const updateUserStatus = catchAsync(
         });
     }
 );
+const updateUserRole = catchAsync(async (req: Request, res: Response) => {
+    const adminId = req.user?.id as string;
+    const { id } = req.params;
+    const { role } = req.body; 
+
+    const result = await adminService.updateUserRole(
+        adminId,
+        id as string,
+        role
+    );
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: `User role updated to ${role}`,
+        data: result,
+    });
+});
 
 const adminGetAllProperties=catchAsync(async(req: Request, res: Response, next: NextFunction)=>{
     const adminId=req.user?.id as string
@@ -76,5 +94,6 @@ export const adminController={
     getAllUser,
     updateUserStatus,
     adminGetAllProperties,
-    getAllRentalRequestAdmin
+    getAllRentalRequestAdmin,
+    updateUserRole
 }

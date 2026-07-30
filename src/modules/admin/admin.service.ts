@@ -1,3 +1,4 @@
+import { Role } from "../../../prisma/generated/prisma/enums";
 import { PropertiesWhereInput } from "../../../prisma/generated/prisma/models";
 import { prisma } from "../../lib/prisma"
 import { IPropertiesQuery } from "./admin.interface";
@@ -85,7 +86,7 @@ const updateUserStatus = async (
 
     return updatedUser;
 };
-const adminGetAllProperties = async (query: IPropertiesQuery,adminId:string) => {
+const adminGetAllProperties = async (query: IPropertiesQuery, adminId: string) => {
     const admin = await prisma.user.findUnique({
         where: {
             id: adminId
@@ -236,7 +237,6 @@ const getAllRentalRequestAdmin = async (adminId: string) => {
         throw new Error("Unauthorized. Please login first.");
     }
 
-    // Check Admin
     const admin = await prisma.user.findUnique({
         where: {
             id: adminId,
@@ -295,10 +295,37 @@ const getAllRentalRequestAdmin = async (adminId: string) => {
 
     return result;
 };
+export const updateUserRole = async (
+    adminId: string,
+    userId: string,
+    role: string
+) => {
+    const admin = await prisma.user.findUnique({ where: { id: adminId } });
+    if (!admin || admin.role !== Role.ADMIN) {
+        throw new Error("Only admins can perform this action");
+    }
 
-export const adminService={
+    if (adminId === userId) {
+        throw new Error("Admin cannot update their own role");
+    }
+
+    const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+            role: role as Role, 
+        },
+        omit: {
+            password: true,
+        },
+    });
+
+    return updatedUser;
+};
+
+export const adminService = {
     getAllUser,
     updateUserStatus,
     adminGetAllProperties,
-    getAllRentalRequestAdmin
+    getAllRentalRequestAdmin,
+    updateUserRole
 }

@@ -37,9 +37,9 @@ const rentalRequest=await renatalRequestService.getAllRentalRequestTenat(tenantI
     })
 });
 const rentalRequestGetById=catchAsync(async(req:Request,res:Response,next:NextFunction)=>{
-
+const tenantId=req.user?.id;
 const id=req.params?.id;
-const rentalRequest=await renatalRequestService.rentalRequestGetById(id as string);
+const rentalRequest=await renatalRequestService.rentalRequestGetById(tenantId as string,id as string);
 
  sendResponse(res,{
         success:true,
