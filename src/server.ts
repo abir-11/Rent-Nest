@@ -4,7 +4,7 @@ import config from "./config";
 import { prisma } from "./lib/prisma";
 
 
-const PROT = config.port;
+const PROT = config.port || 5000;
 async function main() {
     try {
         await prisma.$connect();
